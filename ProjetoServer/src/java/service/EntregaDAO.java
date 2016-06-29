@@ -86,6 +86,7 @@ public class EntregaDAO {
             while (rset.next()) {
             	int id = rset.getInt("id");
             	String endereco = rset.getString("endereco");
+                System.out.println(endereco);
             	String descricao = rset.getString("descricao");
             	String status = rset.getString("status");
             	
@@ -94,6 +95,7 @@ public class EntregaDAO {
                 listaTodos.add(e);
             }
             
+            System.out.println(listaTodos);
             return listaTodos;
             
         }catch(SQLException ex){

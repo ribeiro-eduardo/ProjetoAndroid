@@ -20,6 +20,8 @@ public class EntregadorDAO {
             stmt = conn.prepareStatement(stmtValidarLogin);
             stmt.setString(1,login);
             stmt.setString(2,senha);
+            System.out.println(login);
+            System.out.println(senha);
             
             rset = stmt.executeQuery();          
             

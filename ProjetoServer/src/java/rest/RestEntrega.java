@@ -42,9 +42,13 @@ public class RestEntrega {
     @Produces(MediaType.APPLICATION_JSON)
     public List<Entrega> getEntrega(@PathParam("id") int id) {
         try{
-            EntregaDAO tc = new EntregaDAO();   
-            List<Entrega> ltc = new ArrayList();
-            ltc = tc.getPorEntregador(id);
+            EntregaDAO tc = new EntregaDAO();
+            
+            List<Entrega> ltc = tc.getPorEntregador(id);
+            
+            //ltc = tc.getPorEntregador(id);
+            System.out.println(id);
+            System.out.println(ltc);
             return ltc;
             
         }catch(SQLException e) {
