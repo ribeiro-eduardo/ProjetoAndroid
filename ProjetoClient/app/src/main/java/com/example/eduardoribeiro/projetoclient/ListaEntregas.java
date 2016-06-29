@@ -7,34 +7,33 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class LoginActivity extends AppCompatActivity {
-
-    private Intent intent;
+public class ListaEntregas extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-    }
-
-    public void login(View view){
-        EditText inLogin = (EditText)findViewById(R.id.login);
-        EditText inPassword = (EditText)findViewById(R.id.password);
-
-        String login = inLogin.getText().toString();
-        String password = inPassword.getText().toString();
-        MakeRequest request = new MakeRequest(handler, login, password);
-        request.start();
+        setContentView(R.layout.activity_lista_entregas);
+        Intent it = getIntent();
+        if (it != null){
+            Bundle params = it.getExtras();
+            if (params != null){
+                int id = params.getInt("id");
+                System.out.println("lista de entregas com o id: " + id);
+                MakeRequest request = new MakeRequest(handler,id);
+                request.start();
+            }
+        }
     }
 
     public Handler handler = new Handler(){
@@ -44,10 +43,11 @@ public class LoginActivity extends AppCompatActivity {
             int id = msg.getData().getInt("id");
             if(id == 0){
                 String mensagem = "Login e/ou senha incorretos!";
-                Toast.makeText(LoginActivity.this, mensagem, Toast.LENGTH_LONG).show();
+                Toast.makeText(ListaEntregas.this, mensagem, Toast.LENGTH_LONG).show();
             }else{
                 Bundle bundle = new Bundle();
                 bundle.putInt("id",id);
+                Intent intent = new Intent();
                 intent.putExtras(bundle);
                 intent = new Intent(getApplicationContext(), ListaEntregas.class);
                 startActivity(intent);
@@ -57,13 +57,11 @@ public class LoginActivity extends AppCompatActivity {
 
     public class MakeRequest extends Thread{
         private Handler handler;
-        String login;
-        String password;
+       int id;
 
-        public MakeRequest(Handler handler, String login, String password){
+        public MakeRequest(Handler handler, int id){
             this.handler = handler;
-            this.login = login;
-            this.password = password;
+            this.id = id;
         }
 
         public void run(){
@@ -72,15 +70,18 @@ public class LoginActivity extends AppCompatActivity {
             WebService webService = new WebService(url);
 
             Map params = new HashMap();
-            params.put("login", login);
-            params.put("password", password);
+            params.put("id", id);
 
             //pega a resposta do servidor no eclipse
             String response = webService.webGet("", params);
 
             try{
                 JSONObject jsonObject = new JSONObject(response);
-                int id = jsonObject.getInt("id");
+                List<String> list = new ArrayList<String>();
+                JSONArray array = jsonObject.getJSONArray("entregas");
+                for(int i = 0 ; i < array.length() ; i++){
+                    list.add(array.getJSONObject(i).getString("interestKey"));
+                }
                 Bundle b = new Bundle();
                 b.putInt("id", id);
 
@@ -96,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_login, menu);
+        getMenuInflater().inflate(R.menu.menu_lista_entregas, menu);
         return true;
     }
 
