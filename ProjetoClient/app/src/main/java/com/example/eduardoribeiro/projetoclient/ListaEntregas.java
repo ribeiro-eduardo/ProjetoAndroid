@@ -28,7 +28,7 @@ public class ListaEntregas extends AppCompatActivity {
         if (it != null){
             Bundle params = it.getExtras();
             if (params != null){
-                int id = params.getInt("id");
+                String id = params.getString("id");
                 System.out.println("lista de entregas com o id: " + id);
                 MakeRequest request = new MakeRequest(handler,id);
                 request.start();
@@ -46,7 +46,7 @@ public class ListaEntregas extends AppCompatActivity {
                 Toast.makeText(ListaEntregas.this, mensagem, Toast.LENGTH_LONG).show();
             }else{
                 Bundle bundle = new Bundle();
-                bundle.putInt("id",id);
+                bundle.putInt("id", id);
                 Intent intent = new Intent();
                 intent.putExtras(bundle);
                 intent = new Intent(getApplicationContext(), ListaEntregas.class);
@@ -57,20 +57,21 @@ public class ListaEntregas extends AppCompatActivity {
 
     public class MakeRequest extends Thread{
         private Handler handler;
-       int id;
+        String id;
 
-        public MakeRequest(Handler handler, int id){
+        public MakeRequest(Handler handler, String id){
             this.handler = handler;
             this.id = id;
         }
 
         public void run(){
             super.run();
-            String url = "http://10.0.2.2:8088/ProjetoServer/Login";
+            String url = "http://10.0.2.2:8088/ProjetoServer/ServletEntrega";
             WebService webService = new WebService(url);
 
             Map params = new HashMap();
             params.put("id", id);
+            params.put("action", "listaEntregador");
 
             //pega a resposta do servidor no eclipse
             String response = webService.webGet("", params);
@@ -78,12 +79,18 @@ public class ListaEntregas extends AppCompatActivity {
             try{
                 JSONObject jsonObject = new JSONObject(response);
                 List<String> list = new ArrayList<String>();
-                JSONArray array = jsonObject.getJSONArray("entregas");
-                for(int i = 0 ; i < array.length() ; i++){
-                    list.add(array.getJSONObject(i).getString("interestKey"));
+//                JSONArray array = jsonObject.getJSONArray("jsArray");
+//                for(int i = 0 ; i < array.length() ; i++){
+//
+//                }
+                JSONArray jsonarray = new JSONArray(jsonObject);
+                for (int i = 0; i < jsonarray.length(); i++) {
+                    JSONObject jsonobject = jsonarray.getJSONObject(i);
+                    String endereco = jsonobject.getString("endereco");
+                    String descricao = jsonobject.getString("descricao");
                 }
                 Bundle b = new Bundle();
-                b.putInt("id", id);
+                b.putString("id", id);
 
                 Message msg = new Message();
                 msg.setData(b);

@@ -41,16 +41,17 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         public void handleMessage(Message msg) {
-            int id = msg.getData().getInt("id");
-            if(id == 0){
+            String id = msg.getData().getString("id");
+            if(id.equals("0")){
                 String mensagem = "Login e/ou senha incorretos!";
                 Toast.makeText(LoginActivity.this, mensagem, Toast.LENGTH_LONG).show();
             }else{
                 Bundle bundle = new Bundle();
-                bundle.putInt("id",id);
+                bundle.putString("id",id);
                 intent.putExtras(bundle);
                 intent = new Intent(getApplicationContext(), ListaEntregas.class);
                 startActivity(intent);
+                Toast.makeText(LoginActivity.this, id, Toast.LENGTH_LONG).show();
             }
         };
     };
@@ -68,21 +69,23 @@ public class LoginActivity extends AppCompatActivity {
 
         public void run(){
             super.run();
-            String url = "http://10.0.2.2:8088/ProjetoServer/Login";
+            String url = "http://192.168.1.139:8088/ProjetoServer/Login";
             WebService webService = new WebService(url);
 
             Map params = new HashMap();
             params.put("login", login);
             params.put("password", password);
+            System.out.println(login);
+            System.out.println(password);
 
             //pega a resposta do servidor no eclipse
             String response = webService.webGet("", params);
 
             try{
                 JSONObject jsonObject = new JSONObject(response);
-                int id = jsonObject.getInt("id");
+                String id = jsonObject.getString("id").toString();
                 Bundle b = new Bundle();
-                b.putInt("id", id);
+                b.putString("id", id);
 
                 Message msg = new Message();
                 msg.setData(b);
