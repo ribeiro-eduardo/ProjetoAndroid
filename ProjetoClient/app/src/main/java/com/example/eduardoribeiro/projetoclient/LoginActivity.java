@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class LoginActivity extends AppCompatActivity {
 
     @Override
@@ -33,6 +34,8 @@ public class LoginActivity extends AppCompatActivity {
         MakeRequest request = new MakeRequest(handler, login, password);
         request.start();
     }
+
+    String response = client.getResponse();
 
     public Handler handler = new Handler(){
 
